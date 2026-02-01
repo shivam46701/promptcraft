@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptCraft - AI Prompt Enhancement Tool</title>
+    <meta name="description"
+        content="Transform simple prompts into comprehensive, optimized prompts for AI chatbots and image generation tools">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Puter.js for Free AI API -->
+    <script src="https://js.puter.com/v2/"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h1>PromptCraft</h1>
+            </div>
+            <p class="tagline">Transform simple ideas into powerful prompts</p>
+            <button class="history-toggle" id="historyToggle" aria-label="Toggle history">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Step 1: Input Section -->
+            <section class="input-section card" id="inputSection">
+                <div class="section-header">
+                    <h2>What do you want to create?</h2>
+                </div>
+                <div class="input-wrapper">
+                    <textarea id="promptInput" class="prompt-input"
+                        placeholder="Describe your idea in simple words... e.g., 'a sunset over mountains' or 'build a todo app'"
+                        rows="3"></textarea>
+
+                    <!-- Category Selector -->
+                    <div class="creator-bar">
+                        <span class="creator-label">I want to create</span>
+                        <div class="creator-options" id="categoryChips">
+                            <button class="creator-btn" data-type="chat">💬 Chat</button>
+                            <button class="creator-btn" data-type="image">🎨 Image</button>
+                            <button class="creator-btn" data-type="video">🎥 Video</button>
+                            <button class="creator-btn" data-type="coding">💻 Code</button>
+                            <button class="creator-btn" data-type="app">📱 App</button>
+                            <button class="creator-btn" data-type="research">📚 Research</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="analyzeBtn">
+                        <span>Enhance My Prompt</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="detected-type" id="detectedType"></div>
+            </section>
+
+            <!-- Step 2: Questions Section -->
+            <section class="questions-section card hidden" id="questionsSection">
+                <div class="section-header">
+                    <h2>Let's refine your prompt</h2>
+                    <span class="question-progress" id="questionProgress">1/5</span>
+                </div>
+                <div class="question-container" id="questionContainer">
+                    <!-- Questions will be dynamically inserted here -->
+                </div>
+                <div class="question-nav">
+                    <button class="btn btn-secondary" id="prevQuestion" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Back
+                    </button>
+                    <button class="btn btn-primary" id="nextQuestion">
+                        Next
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <section class="output-section card hidden" id="outputSection">
+                <div class="section-header">
+                    <h2>Your Enhanced Prompt</h2>
+                </div>
+                <div class="output-container">
+                    <div class="output-text" id="enhancedPrompt"></div>
+                    <div class="output-actions">
+                        <button class="btn btn-icon" id="copyBtn" title="Copy to clipboard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                            </svg>
+                            <span>Copy</span>
+                        </button>
+                        <button class="btn btn-icon" id="regenerateBtn" title="Regenerate prompt">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 4v6h6M23 20v-6h-6" />
+                                <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" />
+                            </svg>
+                            <span>Regenerate</span>
+                        </button>
+                        <button class="btn btn-primary" id="newPromptBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            <span>New Prompt</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading State -->
+            <div class="loading-overlay hidden" id="loadingOverlay">
+                <div class="loader">
+                    <div class="loader-ring"></div>
+                    <p id="loadingText">Analyzing your prompt...</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- History Sidebar -->
+        <aside class="history-sidebar" id="historySidebar">
+            <div class="sidebar-header">
+                <h3>Prompt History</h3>
+                <button class="btn btn-icon btn-small" id="clearHistory" title="Clear history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                    </svg>
+                </button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- History items will be inserted here -->
+            </div>
+        </aside>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast hidden" id="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/questions.js"></script>
+    <script src="js/prompt-engine.js"></script>
+    <script src="js/ai-service.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
